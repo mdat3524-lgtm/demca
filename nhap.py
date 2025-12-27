@@ -35,15 +35,11 @@ while True:
     # --- XỬ LÝ TÁCH DÍNH ---
     kernel_morph = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
 
-    # 1. Xóa nhiễu
     mask_clean = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_morph)
 
-    # 2. Cắt gọt (Erode) để tách 2 con cá ra
-    # Dùng kernel nhỏ (3,3) và erode 1-2 lần
     kernel_erode = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     mask_separated = cv2.erode(mask_clean, kernel_erode, iterations=1)
 
-    # Hiển thị mask này để debug xem đã tách chưa
     cv2.imshow("mask_separated", mask_separated)
     # -----------------------
 
@@ -53,11 +49,10 @@ while True:
     for cnt in coutours:
         area = cv2.contourArea(cnt)
 
-        if area > 200:
+        if area > 100:
             x, y, w, h = cv2.boundingRect(cnt)
             #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 1)
 
-            # 2. Tính toán Padding (Phóng to box)
             padding = 5
             x_new = max(0, x - padding)
             y_new = max(0, y - padding)
@@ -72,7 +67,7 @@ while True:
 
     tracks = tracker.update(detections_np)
 
-    # --- LOGIC ĐẾM (Giữ nguyên của bạn) ---
+
     active_ids = {int(t[4]) for t in tracks}
     ids_to_remove = []
     for track_id_in_history in track_right_edge_history:
@@ -105,4 +100,5 @@ while True:
         break
 
 cap.release()
+
 cv2.destroyAllWindows()
