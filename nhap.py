@@ -12,7 +12,6 @@ frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 counted_ids = set()
 count = 0
 
-# Tăng dist2Threshold lên một chút để giảm noise
 object_detector = cv2.createBackgroundSubtractorKNN(history=100, dist2Threshold=700, detectShadows=False)
 
 prev_time = 0
@@ -27,12 +26,10 @@ while True:
 
     frame = cv2.resize(frame, (frame_width // 2, frame_height // 2))
 
-    # Blur nhẹ hơn chút để giữ chi tiết cạnh
     blurred_frame = cv2.GaussianBlur(frame, (7, 7), 0)
     mask = object_detector.apply(blurred_frame)
     _, mask = cv2.threshold(mask, 200, 255, cv2.THRESH_BINARY)
 
-    # --- XỬ LÝ TÁCH DÍNH ---
     kernel_morph = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
 
     mask_clean = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel_morph)
@@ -102,3 +99,4 @@ while True:
 cap.release()
 
 cv2.destroyAllWindows()
+
